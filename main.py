@@ -7,6 +7,9 @@ from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiohttp import web
 from transformers import pipeline
+import os
+
+
 
 # --- ЛОКАЛЬНЫЙ ИИ (Ryzen 7 5700G) ---
 toxic_checker = pipeline("text-classification", model="cointegrated/rubert-tiny-toxicity")
@@ -112,15 +115,18 @@ async def delete_callback(callback: types.CallbackQuery):
         await callback.answer("❌ Ошибка: пост уже удален или прошло >48ч.", show_alert=True)
 
 async def main():
+    # Настройка веб-сервера для Render
     app = web.Application()
     app.router.add_get("/", handle_ping)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 8080)
     
-    print("Бот запущен!")
-    await asyncio.gather(site.start(), dp.start_polling(bot))
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    asyncio.run(main())
+    # Берем порт, который дает Render, или 8080 локально
+    port = int(os.environ.get("PORT", 8080))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    
+    print(f"Веб-сервер запущен на порту {port}")
+    
+    # Запускаем и веб-сервер, и бота одновременно
+    await site.start()
+    await dp.start_polling(bot)

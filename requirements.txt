@@ -3,3 +3,4 @@ aiohttp
 transformers
 torch
 sentencepiece
+os
