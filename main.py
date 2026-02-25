@@ -116,16 +116,16 @@ async def main():
     runner = web.AppRunner(app)
     await runner.setup()
     
-    # Берем порт из переменной окружения Render (по умолчанию 10000)
+    
     port = int(os.environ.get("PORT", 10000))
     site = web.TCPSite(runner, '0.0.0.0', port)
     
-    print(f"--- Открываю порт {port} для Render ---")
+    
     await site.start()
-    print("--- Порт успешно открыт! ---")
+    print("--- Порт открыт ---")
 
     # 2. ТЕПЕРЬ ГРУЗИМ ТЯЖЕЛУЮ НЕЙРОНКУ
-    print("--- Начинаю загрузку ИИ (transformers) ---")
+    print("--- Начинаю загрузку transformers ---")
     global toxic_checker
     try:
         # Это может занять время на слабом CPU Render
